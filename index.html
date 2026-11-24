@@ -1,0 +1,2695 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurant Tip Out Calculator – Server &amp; Bartender Tip Pool</title>
+  <meta name="description" content="Free restaurant tip out calculator for servers and bartenders. Split tip-outs by sales or tips, pool bar tips by hours or points, and copy shift summaries." />
+  <link rel="canonical" href="https://example.com/restaurant-tip-out-calculator" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ShiftCheck" />
+  <meta property="og:title" content="Restaurant Tip Out Calculator – Server &amp; Bartender Tip Pool" />
+  <meta property="og:description" content="Free restaurant tip out calculator for servers and bartenders. Split tip-outs by sales or tips, pool bar tips by hours or points, and copy shift summaries." />
+  <meta property="og:url" content="https://example.com/restaurant-tip-out-calculator" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Restaurant Tip Out Calculator – Server &amp; Bartender Tip Pool" />
+  <meta name="twitter:description" content="Calculate server tip-outs by sales or tips and split bartender tip pools by hours worked or point weights in seconds." />
+
+  <!-- Inline SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23047857'/%3E%3Cpath d='M18 14h28v36l-4.5-3-4.5 3-5-3-5 3-4.5-3-4.5 3V14z' fill='%23ffffff'/%3E%3Cpath d='M32 22v20M27.5 27.5c0-2 2-3.5 4.5-3.5s4.5 1.3 4.5 3.3c0 2.2-2.2 3-4.5 3.7-2.4.7-4.5 1.6-4.5 3.8 0 2 2 3.4 4.5 3.4s4.5-1.4 4.5-3.4' fill='none' stroke='%23047857' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <!-- Structured Data: WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ShiftCheck Restaurant Tip Out Calculator",
+    "alternateName": ["Server Tip Out Calculator", "Bartender Tip Pool Calculator"],
+    "url": "https://example.com/restaurant-tip-out-calculator",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript",
+    "description": "A free restaurant tip out calculator and bartender tip pool calculator built for US servers, bartenders, and shift managers closing out their shifts.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- Structured Data: FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Should server tip-out be based on gross sales or net sales?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Most US restaurants calculate server tip-out on net sales, not gross sales. Net sales remove sales tax, comps, and voids so you are not tipping out support staff on discounted or canceled items. Always check your POS checkout report to see which line your house uses."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a normal restaurant tip-out percentage for bussers, food runners, and bartenders?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "On a sales-based system, typical US rates run 5% to 10% of liquor and bar sales to the bartender, 1% to 2% of net sales to bussers, 1% to 2% of net or food sales to food runners, and 0.5% to 1% to hosts or expo. On a tips-based system, servers usually tip out 20% to 35% of total tips split across support roles."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do you split a bartender tip pool when people work different hours?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Add up every bartender's hours on the shift to get total hours worked. Divide the total tip pool (cash plus credit card tips) by total hours to find the hourly tip rate, then multiply that rate by each bartender's individual hours."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can managers or kitchen staff be included in a restaurant tip pool?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Under US federal FLSA rules, managers and supervisors can never take money from a tip pool, even if they help pour drinks or run food. Back-of-house staff like line cooks and dishwashers can only be included in a tip pool if every employee in the pool earns at least the full federal minimum wage without a tip credit. State laws can be stricter."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --surface-muted: #f1f5f9;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #475569;
+      --accent: #047857;
+      --accent-hover: #065f46;
+      --accent-soft: #ecfdf5;
+      --accent-border: #a7f3d0;
+      --danger: #b91c1c;
+      --danger-soft: #fef2f2;
+      --danger-border: #fecaca;
+      --warning: #92400e;
+      --warning-soft: #fffbeb;
+      --warning-border: #fde68a;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .tabular {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header — strict 3-zone top bar contract */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      min-height: 60px;
+      padding: 10px 0;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.0625rem;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .brand-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .header-nav {
+      display: none;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .header-nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding: 6px 2px;
+      border-bottom: 2px solid transparent;
+      transition: color 150ms ease, border-color 150ms ease;
+    }
+
+    .header-nav a:hover,
+    .header-nav a:focus-visible {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+      outline: none;
+    }
+
+    .header-action {
+      flex-shrink: 0;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.2;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 120ms ease;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background-color: #ffffff;
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--surface);
+      border-color: #94a3b8;
+    }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--text-secondary);
+      border-color: transparent;
+      padding: 8px 12px;
+    }
+
+    .btn-ghost:hover {
+      background-color: var(--surface-muted);
+      color: var(--text);
+    }
+
+    .btn-sm {
+      min-height: 40px;
+      padding: 8px 14px;
+      font-size: 0.875rem;
+    }
+
+    .btn-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 150ms ease, color 150ms ease;
+    }
+
+    .btn-icon:hover {
+      background-color: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .btn-icon:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Hero intro */
+    .page-intro {
+      padding: 20px 0 14px;
+    }
+
+    .page-title {
+      margin: 0 0 6px;
+      font-size: clamp(1.625rem, 3vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.18;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      text-wrap: balance;
+    }
+
+    .page-subtitle {
+      margin: 0;
+      max-width: 64ch;
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+    }
+
+    /* Main Mode Tabs */
+    .mode-tabs-wrap {
+      margin-bottom: 16px;
+    }
+
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 5px;
+      background-color: var(--surface-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      max-width: 560px;
+    }
+
+    .tab-btn {
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn[aria-selected="true"] {
+      background-color: #ffffff;
+      color: var(--accent);
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Calculator 2-column grid */
+    .calc-section {
+      padding-bottom: 48px;
+    }
+
+    .calc-panel[hidden] {
+      display: none;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+
+    .card-summary {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+
+    .section-block {
+      padding-bottom: 22px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-block:last-child {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: none;
+    }
+
+    .block-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px 16px;
+      margin-bottom: 14px;
+    }
+
+    .block-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .block-meta {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .block-meta strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Segmented toggle inside form */
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      background-color: var(--surface-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .seg-btn {
+      min-height: 44px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+    }
+
+    .seg-btn[aria-pressed="true"] {
+      background-color: #ffffff;
+      color: var(--text);
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .seg-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Form Fields */
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .field-hint {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-prefix,
+    .input-suffix {
+      position: absolute;
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .input-prefix {
+      left: 12px;
+    }
+
+    .input-suffix {
+      right: 12px;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background-color: #ffffff;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      line-height: 1.3;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .select {
+      padding-right: 32px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      cursor: pointer;
+    }
+
+    .input.has-prefix {
+      padding-left: 28px;
+    }
+
+    .input.has-suffix {
+      padding-right: 30px;
+    }
+
+    .input.num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .input::placeholder {
+      color: #94a3b8;
+    }
+
+    .input:hover,
+    .select:hover {
+      border-color: #94a3b8;
+    }
+
+    .input:focus,
+    .select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.14);
+    }
+
+    .input-sales-muted {
+      opacity: 0.65;
+    }
+
+    /* Dynamic Rows (Roles & Staff) */
+    .rows-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .role-row,
+    .staff-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 12px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      align-items: start;
+    }
+
+    .row-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .row-controls {
+      display: grid;
+      grid-template-columns: 76px minmax(112px, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .row-controls.no-base {
+      grid-template-columns: minmax(96px, 120px) 1fr;
+    }
+
+    .row-controls .select {
+      font-size: 0.875rem;
+      padding-left: 10px;
+      padding-right: 28px;
+    }
+
+    .row-payout-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      text-align: right;
+      min-width: 68px;
+      padding: 0 2px;
+    }
+
+    .row-payout-amount {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .row-payout-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .row-footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      padding: 8px 4px;
+      min-height: 40px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+
+    .link-btn:hover {
+      color: var(--text);
+    }
+
+    .link-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Alert / Warning Box */
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+
+    .alert[hidden] {
+      display: none;
+    }
+
+    .alert-warning {
+      background-color: var(--warning-soft);
+      border: 1px solid var(--warning-border);
+      color: var(--warning);
+    }
+
+    .alert-danger {
+      background-color: var(--danger-soft);
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+    }
+
+    .alert-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Checkout Summary Panel */
+    .summary-hero {
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-label {
+      margin: 0 0 4px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .summary-amount {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: clamp(1.875rem, 3.6vw, 2.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .summary-amount.is-negative {
+      color: var(--danger);
+    }
+
+    .summary-subline {
+      margin: 8px 0 0;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .subline-sep {
+      display: none;
+    }
+
+    .ledger {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .ledger-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9375rem;
+    }
+
+    .ledger-row:last-child {
+      border-bottom: none;
+    }
+
+    .ledger-key {
+      color: var(--text-secondary);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ledger-key small {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .ledger-val {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .ledger-row.is-total {
+      padding-top: 10px;
+      margin-top: 4px;
+      border-top: 1px solid var(--border-strong);
+      border-bottom: none;
+      font-weight: 700;
+    }
+
+    .ledger-row.is-total .ledger-key,
+    .ledger-row.is-total .ledger-val {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .ledger-section-title {
+      margin: 12px 0 4px;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+
+    .summary-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .copy-feedback {
+      margin: 8px 0 0;
+      min-height: 20px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .empty-note {
+      padding: 16px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      background-color: #ffffff;
+    }
+
+    /* Hospitality Guide & FAQ */
+    .guide-section {
+      border-top: 1px solid var(--border);
+      background-color: var(--surface);
+      padding: 56px 0 64px;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .editorial-block h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.375rem, 2.2vw, 1.625rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-wrap: balance;
+    }
+
+    .editorial-block p {
+      margin: 0 0 14px;
+      max-width: 68ch;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .editorial-block p:last-child {
+      margin-bottom: 0;
+    }
+
+    .rates-table-wrap {
+      margin-top: 18px;
+      overflow-x: auto;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    .rates-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9375rem;
+    }
+
+    .rates-table th,
+    .rates-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .rates-table th {
+      background-color: var(--surface-muted);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .rates-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rates-table td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .rates-table td.num-col {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .steps-list {
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 16px;
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background-color: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+
+    .step-item h3 {
+      margin: 0 0 4px;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .step-item p {
+      margin: 0;
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+    }
+
+    .example-callout {
+      margin-top: 18px;
+      padding: 16px 18px;
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+    }
+
+    .example-callout strong {
+      color: var(--text);
+    }
+
+    /* FAQ Accordion */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .faq-item {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .faq-item summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      min-height: 52px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--text);
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-item summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .faq-chevron {
+      flex-shrink: 0;
+      color: var(--text-muted);
+      transition: transform 160ms ease;
+    }
+
+    .faq-item[open] .faq-chevron {
+      transform: rotate(180deg);
+    }
+
+    .faq-body {
+      padding: 0 18px 16px;
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      line-height: 1.65;
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      background-color: #ffffff;
+      padding: 28px 0;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px 24px;
+    }
+
+    .footer-inner p {
+      margin: 0;
+    }
+
+    /* Responsive Breakpoints */
+    @media (min-width: 640px) {
+      .field-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .role-row,
+      .staff-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+      }
+
+      .row-main {
+        grid-template-columns: minmax(120px, 1.15fr) auto;
+        align-items: center;
+      }
+
+      .row-controls {
+        grid-template-columns: 86px 136px 84px;
+      }
+
+      .row-controls.no-base {
+        grid-template-columns: 104px 92px;
+      }
+
+      .staff-row .row-main {
+        grid-template-columns: minmax(160px, 1.4fr) auto;
+        align-items: center;
+      }
+
+      .staff-controls {
+        display: grid;
+        grid-template-columns: 112px 92px;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .summary-subline {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 10px;
+        font-size: 0.875rem;
+      }
+
+      .subline-sep {
+        display: inline;
+      }
+
+      .summary-actions {
+        grid-template-columns: 1fr auto;
+      }
+
+      .steps-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 860px) {
+      .header-nav {
+        display: flex;
+      }
+
+      .page-intro {
+        padding: 24px 0 18px;
+      }
+
+      .calc-grid {
+        grid-template-columns: minmax(0, 1.42fr) minmax(320px, 0.92fr);
+        gap: 24px;
+      }
+
+      .card,
+      .card-summary {
+        padding: 22px;
+      }
+
+      .card-summary {
+        position: sticky;
+        top: 76px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="brand-link">
+        <svg class="brand-icon" viewBox="0 0 64 64" aria-hidden="true">
+          <rect width="64" height="64" rx="14" fill="#047857"/>
+          <path d="M18 14h28v36l-4.5-3-4.5 3-5-3-5 3-4.5-3-4.5 3V14z" fill="#ffffff"/>
+          <path d="M32 22v20M27.5 27.5c0-2 2-3.5 4.5-3.5s4.5 1.3 4.5 3.3c0 2.2-2.2 3-4.5 3.7-2.4.7-4.5 1.6-4.5 3.8 0 2 2 3.4 4.5 3.4s4.5-1.4 4.5-3.4" fill="none" stroke="#047857" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>ShiftCheck</span>
+      </a>
+
+      <nav class="header-nav" aria-label="Primary">
+        <a href="#calculator" data-nav-tab="server">Server Tip Out</a>
+        <a href="#calculator" data-nav-tab="pool">Bartender Pool</a>
+        <a href="#standard-rates">Standard Rates</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="header-action">
+        <button type="button" id="header-copy-btn" class="btn btn-primary btn-sm">Copy Summary</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="page-intro">
+      <div class="container">
+        <h1 class="page-title">Restaurant Tip Out Calculator</h1>
+        <p class="page-subtitle">Close out your shift in seconds. Calculate server tip-outs by sales or total tips, or split a bartender tip pool by hours worked or role points.</p>
+      </div>
+    </section>
+
+    <section id="calculator" class="calc-section" aria-label="Tip out and tip pool calculator">
+      <div class="container">
+        <div class="mode-tabs-wrap">
+          <div class="mode-tabs" role="tablist" aria-label="Calculator mode">
+            <button
+              type="button"
+              id="tab-server"
+              class="tab-btn"
+              role="tab"
+              aria-selected="true"
+              aria-controls="panel-server"
+            >Server Tip Out</button>
+            <button
+              type="button"
+              id="tab-pool"
+              class="tab-btn"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-pool"
+            >Bartender Tip Pool</button>
+          </div>
+        </div>
+
+        <!-- TAB 1: SERVER TIP OUT CALCULATOR -->
+        <div id="panel-server" class="calc-panel" role="tabpanel" aria-labelledby="tab-server">
+          <div class="calc-grid">
+            <div class="card">
+              <div class="section-block">
+                <div class="block-header">
+                  <h2 class="block-title">Calculation Method</h2>
+                  <span class="block-meta" id="server-method-note">Tip-outs based on net &amp; liquor sales</span>
+                </div>
+                <div class="segmented" role="group" aria-label="Server tip out calculation method">
+                  <button
+                    type="button"
+                    id="method-sales"
+                    class="seg-btn"
+                    aria-pressed="true"
+                  >% of Total Sales</button>
+                  <button
+                    type="button"
+                    id="method-tips"
+                    class="seg-btn"
+                    aria-pressed="false"
+                  >% of Total Tips</button>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <div class="block-header">
+                  <h2 class="block-title">Shift Tips &amp; Sales</h2>
+                  <span class="block-meta">Total tips: <strong id="server-tips-inline" class="mono">$0.00</strong></span>
+                </div>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="server-cc-tips">Credit Card Tips</label>
+                    <div class="input-wrap">
+                      <span class="input-prefix" aria-hidden="true">$</span>
+                      <input
+                        id="server-cc-tips"
+                        class="input num has-prefix"
+                        type="text"
+                        inputmode="decimal"
+                        autocomplete="off"
+                        placeholder="0.00"
+                        value="285.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="server-cash-tips">Cash Tips</label>
+                    <div class="input-wrap">
+                      <span class="input-prefix" aria-hidden="true">$</span>
+                      <input
+                        id="server-cash-tips"
+                        class="input num has-prefix"
+                        type="text"
+                        inputmode="decimal"
+                        autocomplete="off"
+                        placeholder="0.00"
+                        value="65.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="field" id="field-total-sales">
+                    <label for="server-total-sales">Total Net Sales</label>
+                    <div class="input-wrap">
+                      <span class="input-prefix" aria-hidden="true">$</span>
+                      <input
+                        id="server-total-sales"
+                        class="input num has-prefix"
+                        type="text"
+                        inputmode="decimal"
+                        autocomplete="off"
+                        placeholder="0.00"
+                        value="1650.00"
+                      />
+                    </div>
+                    <p class="field-hint">Use net sales from your POS checkout (excludes tax &amp; comps).</p>
+                  </div>
+
+                  <div class="field" id="field-liquor-sales">
+                    <label for="server-liquor-sales">Liquor / Bar Sales <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+                    <div class="input-wrap">
+                      <span class="input-prefix" aria-hidden="true">$</span>
+                      <input
+                        id="server-liquor-sales"
+                        class="input num has-prefix"
+                        type="text"
+                        inputmode="decimal"
+                        autocomplete="off"
+                        placeholder="0.00"
+                        value="420.00"
+                      />
+                    </div>
+                    <p class="field-hint">Used for roles set to Liquor sales, like your bartender.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <div class="block-header">
+                  <h2 class="block-title">Support Staff Tip-Out</h2>
+                  <span class="block-meta" id="server-roles-count">4 roles</span>
+                </div>
+
+                <div id="server-roles-list" class="rows-list" aria-live="polite"></div>
+
+                <div class="row-footer-actions">
+                  <button type="button" id="add-role-btn" class="btn btn-secondary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    Add Custom Role
+                  </button>
+                  <button type="button" id="restore-roles-btn" class="link-btn">Restore default roles</button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="card-summary" aria-label="Server end-of-shift checkout summary">
+              <div id="server-alert" class="alert alert-danger" role="alert" hidden>
+                <svg class="alert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <span id="server-alert-text"></span>
+              </div>
+
+              <div class="summary-hero">
+                <p class="summary-label">Server Net Take-Home Pay</p>
+                <p id="server-net-pay" class="summary-amount">$0.00</p>
+                <div class="summary-subline" id="server-subline">
+                  <span id="server-tipout-pct-label">0.0% of tips tipped out</span>
+                  <span class="subline-sep" aria-hidden="true">&middot;</span>
+                  <span id="server-avg-tip-label">0.0% avg tip on sales</span>
+                </div>
+              </div>
+
+              <ul class="ledger">
+                <li class="ledger-row">
+                  <span class="ledger-key">Total Tips Earned <small id="server-tips-breakdown">CC $0.00 + Cash $0.00</small></span>
+                  <span id="summary-total-tips" class="ledger-val">$0.00</span>
+                </li>
+                <li class="ledger-row">
+                  <span class="ledger-key">Total Tip Out</span>
+                  <span id="summary-total-tipout" class="ledger-val">-$0.00</span>
+                </li>
+              </ul>
+
+              <p class="ledger-section-title">Payout by Role</p>
+              <ul id="summary-roles-ledger" class="ledger"></ul>
+
+              <div class="summary-actions">
+                <button type="button" id="server-copy-btn" class="btn btn-primary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                  Copy Shift Summary
+                </button>
+                <button type="button" id="server-reset-btn" class="btn btn-secondary">Clear / Reset</button>
+              </div>
+              <p id="server-copy-status" class="copy-feedback" role="status" aria-live="polite"></p>
+            </aside>
+          </div>
+        </div>
+
+        <!-- TAB 2: BARTENDER TIP POOL CALCULATOR -->
+        <div id="panel-pool" class="calc-panel" role="tabpanel" aria-labelledby="tab-pool" hidden>
+          <div class="calc-grid">
+            <div class="card">
+              <div class="section-block">
+                <div class="block-header">
+                  <h2 class="block-title">Pool Split Method</h2>
+                  <span class="block-meta" id="pool-method-note">Proportional by shift hours</span>
+                </div>
+                <div class="segmented" role="group" aria-label="Bartender tip pool split method">
+                  <button
+                    type="button"
+                    id="pool-mode-hours"
+                    class="seg-btn"
+                    aria-pressed="true"
+                  >Split by Hours Worked</button>
+                  <button
+                    type="button"
+                    id="pool-mode-points"
+                    class="seg-btn"
+                    aria-pressed="false"
+                  >Split by Points / Weight</button>
+                </div>
+                <p id="pool-mode-hint" class="field-hint" style="margin-top:10px;">Enter each bartender's clock-in hours. Pennies are balanced so payouts equal the exact pool total.</p>
+              </div>
+
+              <div class="section-block">
+                <div class="block-header">
+                  <h2 class="block-title">Total Tip Pool</h2>
+                  <span class="block-meta">Combined pool: <strong id="pool-total-inline" class="mono">$0.00</strong></span>
+                </div>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="pool-cc-tips">Credit Card Tips</label>
+                    <div class="input-wrap">
+                      <span class="input-prefix" aria-hidden="true">$</span>
+                      <input
+                        id="pool-cc-tips"
+                        class="input num has-prefix"
+                        type="text"
+                        inputmode="decimal"
+                        autocomplete="off"
+                        placeholder="0.00"
+                        value="690.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="pool-cash-tips">Cash Tips</label>
+                    <div class="input-wrap">
+                      <span class="input-prefix" aria-hidden="true">$</span>
+                      <input
+                        id="pool-cash-tips"
+                        class="input num has-prefix"
+                        type="text"
+                        inputmode="decimal"
+                        autocomplete="off"
+                        placeholder="0.00"
+                        value="210.00"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <div class="block-header">
+                  <h2 class="block-title">Bar Team Members</h2>
+                  <span class="block-meta" id="pool-staff-count">3 staff</span>
+                </div>
+
+                <div id="pool-staff-list" class="rows-list" aria-live="polite"></div>
+
+                <div class="row-footer-actions">
+                  <button type="button" id="add-staff-btn" class="btn btn-secondary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    Add Staff Member
+                  </button>
+                  <button type="button" id="restore-staff-btn" class="link-btn">Restore sample team</button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="card-summary" aria-label="Bartender tip pool checkout summary">
+              <div id="pool-alert" class="alert alert-warning" role="alert" hidden>
+                <svg class="alert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <span id="pool-alert-text"></span>
+              </div>
+
+              <div class="summary-hero">
+                <p class="summary-label" id="pool-rate-label">Hourly Tip Rate</p>
+                <p id="pool-rate-value" class="summary-amount">$0.00</p>
+                <div class="summary-subline">
+                  <span id="pool-weight-total-label">0.00 total hours</span>
+                  <span class="subline-sep" aria-hidden="true">&middot;</span>
+                  <span id="pool-member-count-label">0 people in pool</span>
+                </div>
+              </div>
+
+              <ul class="ledger">
+                <li class="ledger-row">
+                  <span class="ledger-key">Total Tip Pool <small id="pool-tips-breakdown">CC $0.00 + Cash $0.00</small></span>
+                  <span id="summary-pool-total" class="ledger-val">$0.00</span>
+                </li>
+                <li class="ledger-row">
+                  <span class="ledger-key">Total Distributed</span>
+                  <span id="summary-pool-distributed" class="ledger-val">$0.00</span>
+                </li>
+              </ul>
+
+              <p class="ledger-section-title">Individual Payouts</p>
+              <ul id="summary-pool-ledger" class="ledger"></ul>
+
+              <div class="summary-actions">
+                <button type="button" id="pool-copy-btn" class="btn btn-primary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                  Copy Shift Summary
+                </button>
+                <button type="button" id="pool-reset-btn" class="btn btn-secondary">Clear / Reset</button>
+              </div>
+              <p id="pool-copy-status" class="copy-feedback" role="status" aria-live="polite"></p>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HUMAN-WRITTEN HOSPITALITY GUIDE & FAQ -->
+    <article class="guide-section">
+      <div class="container guide-grid">
+        <section id="standard-rates" class="editorial-block">
+          <h2>How Standard US Restaurant Tip-Out Percentages Work</h2>
+          <p>At the end of a shift, servers rarely keep 100% of their credit card and cash tips. You share a set cut with the support team that turned your tables, ran your plates, and poured your drinks. Most US dining rooms run on one of two models: a percentage of your <strong>net sales</strong> (the standard in casual and upscale dining) or a percentage of your <strong>total tips</strong>.</p>
+          <p>Always check whether your checkout report lists <strong>gross sales</strong> or <strong>net sales</strong>. Gross sales include comps, voids, and discounts. Net sales reflect what guests actually paid before tax, which is why fair houses base server tip-out on net sales and separate liquor sales for the bar.</p>
+
+          <div class="rates-table-wrap">
+            <table class="rates-table">
+              <thead>
+                <tr>
+                  <th>Support Role</th>
+                  <th>% of Sales Model</th>
+                  <th>% of Tips Model</th>
+                  <th>What It Covers</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Bartender</td>
+                  <td class="num-col">5% &ndash; 10% of liquor sales</td>
+                  <td class="num-col">5% &ndash; 10% of tips</td>
+                  <td>Service well drinks, wine bottles, and draft pours</td>
+                </tr>
+                <tr>
+                  <td>Busser</td>
+                  <td class="num-col">1% &ndash; 2% of net sales</td>
+                  <td class="num-col">10% &ndash; 15% of tips</td>
+                  <td>Clearing plates, wiping tables, refilling water</td>
+                </tr>
+                <tr>
+                  <td>Food Runner</td>
+                  <td class="num-col">1% &ndash; 2% of net/food sales</td>
+                  <td class="num-col">5% &ndash; 10% of tips</td>
+                  <td>Delivering hot dishes and running sides from the pass</td>
+                </tr>
+                <tr>
+                  <td>Host / Expo</td>
+                  <td class="num-col">0.5% &ndash; 1% of net sales</td>
+                  <td class="num-col">2% &ndash; 5% of tips</td>
+                  <td>Managing table rotation, plating checks, ticket pacing</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tip-pooling" class="editorial-block">
+          <h2>How to Run a Fair Bartender Tip Pool</h2>
+          <p>Behind a busy bar, splitting tips evenly per head only works if everyone clocks in and closes together. When an opener leaves at 8 PM and a closer stays until 2 AM, an hourly split or point-weighted pool keeps checkout transparent and stops arguments before they start.</p>
+
+          <ol class="steps-list">
+            <li class="step-item">
+              <span class="step-num">1</span>
+              <div>
+                <h3>Combine the Full Pot</h3>
+                <p>Count the cash tip jar, add credit card tips from the bar POS readout, and include server bar tip-outs if your house pools them together.</p>
+              </div>
+            </li>
+            <li class="step-item">
+              <span class="step-num">2</span>
+              <div>
+                <h3>Total the Hours or Points</h3>
+                <p>Add up every shift's worked hours for a straight hourly split, or assign fixed weights (like 1.0 for bartenders and 0.5 for a barback).</p>
+              </div>
+            </li>
+            <li class="step-item">
+              <span class="step-num">3</span>
+              <div>
+                <h3>Multiply and Balance Cents</h3>
+                <p>Divide the pool by total hours or points, multiply by each person's share, and distribute any leftover cents to the highest remainders so the drawer balances to the penny.</p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="example-callout">
+            <strong>Quick Friday Bar Example:</strong> Say the bar brings in <span class="mono">$900.00</span> total across three people working 8, 6.5, and 5.5 hours (20 hours combined). The hourly tip rate is <span class="mono">$45.00/hr</span>. The 8-hour bartender walks with <span class="mono">$360.00</span>, the 6.5-hour mid gets <span class="mono">$292.50</span>, and the 5.5-hour closer gets <span class="mono">$247.50</span>. Use the <strong>Bartender Tip Pool</strong> tab above to run your exact numbers and paste the breakdown straight into your shift log.
+          </div>
+        </section>
+
+        <section id="faq" class="editorial-block">
+          <h2>End-of-Shift Tip-Out FAQ</h2>
+          <div class="faq-list">
+            <details class="faq-item" open>
+              <summary>
+                <span>Should server tip-out be based on gross sales or net sales?</span>
+                <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="faq-body">
+                Most US restaurants calculate server tip-out on net sales, not gross sales. Net sales remove sales tax, comps, and voids so you are not tipping out support staff on discounted or canceled items. Always check your POS checkout report to see which line your house uses.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>
+                <span>What is a normal restaurant tip-out percentage for bussers, food runners, and bartenders?</span>
+                <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="faq-body">
+                On a sales-based system, typical US rates run 5% to 10% of liquor and bar sales to the bartender, 1% to 2% of net sales to bussers, 1% to 2% of net or food sales to food runners, and 0.5% to 1% to hosts or expo. On a tips-based system, servers usually tip out 20% to 35% of total tips split across support roles.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>
+                <span>How do you split a bartender tip pool when people work different hours?</span>
+                <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="faq-body">
+                Add up every bartender's hours on the shift to get total hours worked. Divide the total tip pool (cash plus credit card tips) by total hours to find the hourly tip rate, then multiply that rate by each bartender's individual hours.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>
+                <span>Can managers or kitchen staff be included in a restaurant tip pool?</span>
+                <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="faq-body">
+                Under US federal FLSA rules, managers and supervisors can never take money from a tip pool, even if they help pour drinks or run food. Back-of-house staff like line cooks and dishwashers can only be included in a tip pool if every employee in the pool earns at least the full federal minimum wage without a tip credit. State laws can be stricter.
+              </div>
+            </details>
+          </div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>ShiftCheck &middot; Free restaurant tip out calculator &amp; bartender tip pool calculator.</p>
+      <p>All calculations run locally in your browser. Confirm house tip-out policies with your shift manager.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* =====================================================================
+         1. PURE CALCULATION ENGINE (cent-accurate, zero external deps)
+         ===================================================================== */
+
+      function parseNonNegative(value) {
+        if (typeof value === 'number') {
+          return Number.isFinite(value) && value > 0 ? value : 0;
+        }
+        if (typeof value !== 'string') return 0;
+        var cleaned = value.replace(/[^0-9.\-]/g, '').trim();
+        if (!cleaned || cleaned === '.' || cleaned === '-' || cleaned === '-.') return 0;
+        var parsed = Number(cleaned);
+        if (!Number.isFinite(parsed) || parsed < 0) return 0;
+        return parsed;
+      }
+
+      function toCents(dollars) {
+        return Math.round(parseNonNegative(dollars) * 100);
+      }
+
+      function formatCurrencyFromCents(cents) {
+        var isNeg = cents < 0;
+        var abs = Math.abs(Math.round(cents));
+        var dollars = Math.floor(abs / 100);
+        var rem = abs % 100;
+        var formattedDollars = dollars.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        var formattedRem = rem < 10 ? '0' + rem : String(rem);
+        return (isNeg ? '-$' : '$') + formattedDollars + '.' + formattedRem;
+      }
+
+      function formatPercent(value) {
+        if (!Number.isFinite(value) || value < 0) return '0.0%';
+        return value.toFixed(1) + '%';
+      }
+
+      function calculateServerTipOut(input) {
+        var method = input.method === 'tips' ? 'tips' : 'sales';
+        var ccTipsCents = toCents(input.ccTips);
+        var cashTipsCents = toCents(input.cashTips);
+        var totalTipsCents = ccTipsCents + cashTipsCents;
+        var totalSalesCents = toCents(input.totalSales);
+        var liquorSalesCents = toCents(input.liquorSales);
+        var roles = Array.isArray(input.roles) ? input.roles : [];
+
+        var totalTipOutCents = 0;
+        var breakdown = roles.map(function (role) {
+          var pct = parseNonNegative(method === 'sales' ? role.salesPercent : role.tipsPercent);
+          var base = role.salesBase === 'liquor' ? 'liquor' : 'total';
+          var baseCents = method === 'tips'
+            ? totalTipsCents
+            : (base === 'liquor' ? liquorSalesCents : totalSalesCents);
+          var payoutCents = Math.round(baseCents * (pct / 100));
+          totalTipOutCents += payoutCents;
+          return {
+            id: role.id,
+            name: (role.name || '').trim() || 'Unnamed Role',
+            percent: pct,
+            salesBase: base,
+            baseCents: baseCents,
+            payoutCents: payoutCents
+          };
+        });
+
+        var netTakeHomeCents = totalTipsCents - totalTipOutCents;
+        var tipOutPercentOfTips = totalTipsCents > 0 ? (totalTipOutCents / totalTipsCents) * 100 : 0;
+        var avgTipPercentOfSales = totalSalesCents > 0 ? (totalTipsCents / totalSalesCents) * 100 : 0;
+
+        return {
+          method: method,
+          ccTipsCents: ccTipsCents,
+          cashTipsCents: cashTipsCents,
+          totalTipsCents: totalTipsCents,
+          totalSalesCents: totalSalesCents,
+          liquorSalesCents: liquorSalesCents,
+          breakdown: breakdown,
+          totalTipOutCents: totalTipOutCents,
+          netTakeHomeCents: netTakeHomeCents,
+          tipOutPercentOfTips: tipOutPercentOfTips,
+          avgTipPercentOfSales: avgTipPercentOfSales,
+          exceedsTips: totalTipOutCents > totalTipsCents && totalTipOutCents > 0
+        };
+      }
+
+      function calculateBartenderPool(input) {
+        var mode = input.mode === 'points' ? 'points' : 'hours';
+        var ccTipsCents = toCents(input.ccTips);
+        var cashTipsCents = toCents(input.cashTips);
+        var totalPoolCents = ccTipsCents + cashTipsCents;
+        var staff = Array.isArray(input.staff) ? input.staff : [];
+
+        var entries = staff.map(function (member, idx) {
+          var weight = parseNonNegative(mode === 'hours' ? member.hours : member.points);
+          return {
+            id: member.id,
+            index: idx,
+            name: (member.name || '').trim() || ('Staff ' + (idx + 1)),
+            weight: weight,
+            exactCents: 0,
+            payoutCents: 0,
+            remainder: 0,
+            sharePercent: 0
+          };
+        });
+
+        var totalWeight = entries.reduce(function (sum, item) {
+          return sum + item.weight;
+        }, 0);
+
+        if (totalWeight > 0 && totalPoolCents > 0) {
+          var floorSum = 0;
+          entries.forEach(function (item) {
+            var exact = (totalPoolCents * item.weight) / totalWeight;
+            var floored = Math.floor(exact);
+            item.exactCents = exact;
+            item.payoutCents = floored;
+            item.remainder = exact - floored;
+            item.sharePercent = (item.weight / totalWeight) * 100;
+            floorSum += floored;
+          });
+
+          // Largest Remainder (Hamilton) distribution for exact penny reconciliation
+          var remainingPennies = totalPoolCents - floorSum;
+          if (remainingPennies > 0) {
+            var ranked = entries
+              .filter(function (item) { return item.weight > 0; })
+              .slice()
+              .sort(function (a, b) {
+                if (Math.abs(b.remainder - a.remainder) > 1e-12) {
+                  return b.remainder - a.remainder;
+                }
+                return a.index - b.index;
+              });
+
+            for (var i = 0; i < remainingPennies && i < ranked.length; i++) {
+              ranked[i].payoutCents += 1;
+            }
+          }
+        } else if (totalWeight > 0) {
+          entries.forEach(function (item) {
+            item.sharePercent = (item.weight / totalWeight) * 100;
+          });
+        }
+
+        var distributedCents = entries.reduce(function (sum, item) {
+          return sum + item.payoutCents;
+        }, 0);
+
+        var rateCents = totalWeight > 0 ? Math.round(totalPoolCents / totalWeight) : 0;
+        var activeStaffCount = entries.filter(function (item) { return item.weight > 0; }).length;
+
+        return {
+          mode: mode,
+          ccTipsCents: ccTipsCents,
+          cashTipsCents: cashTipsCents,
+          totalPoolCents: totalPoolCents,
+          totalWeight: totalWeight,
+          rateCents: rateCents,
+          distributedCents: distributedCents,
+          activeStaffCount: activeStaffCount,
+          entries: entries
+        };
+      }
+
+      function buildServerSummaryText(result) {
+        var lines = [
+          'SERVER END-OF-SHIFT CHECKOUT',
+          'Method: ' + (result.method === 'sales' ? '% of Sales' : '% of Total Tips'),
+          'Total Tips: ' + formatCurrencyFromCents(result.totalTipsCents) +
+            ' (CC ' + formatCurrencyFromCents(result.ccTipsCents) +
+            ' + Cash ' + formatCurrencyFromCents(result.cashTipsCents) + ')'
+        ];
+
+        if (result.method === 'sales') {
+          lines.push(
+            'Net Sales: ' + formatCurrencyFromCents(result.totalSalesCents) +
+            ' | Liquor Sales: ' + formatCurrencyFromCents(result.liquorSalesCents)
+          );
+        }
+
+        lines.push('');
+        lines.push('Tip-Out Breakdown:');
+        if (result.breakdown.length === 0) {
+          lines.push('- No tip-out roles added');
+        } else {
+          result.breakdown.forEach(function (item) {
+            var baseLabel = result.method === 'tips'
+              ? 'of tips'
+              : (item.salesBase === 'liquor' ? 'of liquor sales' : 'of net sales');
+            lines.push(
+              '- ' + item.name + ' (' + item.percent + '% ' + baseLabel + '): ' +
+              formatCurrencyFromCents(item.payoutCents)
+            );
+          });
+        }
+
+        lines.push('');
+        lines.push('Total Tip Out: ' + formatCurrencyFromCents(result.totalTipOutCents));
+        lines.push('Server Net Take-Home: ' + formatCurrencyFromCents(result.netTakeHomeCents));
+        return lines.join('\n');
+      }
+
+      function buildPoolSummaryText(result) {
+        var unit = result.mode === 'hours' ? 'hrs' : 'pts';
+        var rateUnit = result.mode === 'hours' ? '/hr' : '/pt';
+        var lines = [
+          'BARTENDER TIP POOL CHECKOUT',
+          'Split Method: ' + (result.mode === 'hours' ? 'Hours Worked' : 'Points / Weight'),
+          'Total Tip Pool: ' + formatCurrencyFromCents(result.totalPoolCents) +
+            ' (CC ' + formatCurrencyFromCents(result.ccTipsCents) +
+            ' + Cash ' + formatCurrencyFromCents(result.cashTipsCents) + ')',
+          'Total ' + (result.mode === 'hours' ? 'Hours' : 'Points') + ': ' +
+            Number(result.totalWeight.toFixed(2)) + ' ' + unit +
+            ' (' + formatCurrencyFromCents(result.rateCents) + rateUnit + ')',
+          '',
+          'Individual Payouts:'
+        ];
+
+        if (result.entries.length === 0) {
+          lines.push('- No staff members added');
+        } else {
+          result.entries.forEach(function (item) {
+            lines.push(
+              '- ' + item.name + ' (' + Number(item.weight.toFixed(2)) + ' ' + unit +
+              ', ' + formatPercent(item.sharePercent) + '): ' +
+              formatCurrencyFromCents(item.payoutCents)
+            );
+          });
+        }
+
+        lines.push('');
+        lines.push('Total Distributed: ' + formatCurrencyFromCents(result.distributedCents));
+        return lines.join('\n');
+      }
+
+      // Expose pure calculation engine for automated verification / testing without polluting UI
+      if (typeof window !== 'undefined') {
+        window.__ShiftCheckEngine = {
+          parseNonNegative: parseNonNegative,
+          toCents: toCents,
+          formatCurrencyFromCents: formatCurrencyFromCents,
+          calculateServerTipOut: calculateServerTipOut,
+          calculateBartenderPool: calculateBartenderPool,
+          buildServerSummaryText: buildServerSummaryText,
+          buildPoolSummaryText: buildPoolSummaryText
+        };
+      }
+
+      /* =====================================================================
+         2. APPLICATION STATE & DOM WIRING
+         ===================================================================== */
+
+      var nextId = 100;
+      function makeId(prefix) {
+        nextId += 1;
+        return prefix + '-' + nextId;
+      }
+
+      function createDefaultRoles() {
+        return [
+          { id: 'role-bartender', name: 'Bartender', salesPercent: '5', tipsPercent: '10', salesBase: 'liquor' },
+          { id: 'role-busser', name: 'Busser', salesPercent: '2', tipsPercent: '10', salesBase: 'total' },
+          { id: 'role-runner', name: 'Food Runner', salesPercent: '1.5', tipsPercent: '5', salesBase: 'total' },
+          { id: 'role-host', name: 'Host / Expo', salesPercent: '1', tipsPercent: '5', salesBase: 'total' }
+        ];
+      }
+
+      function createDefaultStaff() {
+        return [
+          { id: 'staff-1', name: 'Maya (Lead Bartender)', hours: '8', points: '1.0' },
+          { id: 'staff-2', name: 'Carlos (Bartender)', hours: '6.5', points: '1.0' },
+          { id: 'staff-3', name: 'Devon (Barback)', hours: '5.5', points: '0.5' }
+        ];
+      }
+
+      var state = {
+        activeTab: 'server',
+        server: {
+          method: 'sales',
+          ccTips: '285.00',
+          cashTips: '65.00',
+          totalSales: '1650.00',
+          liquorSales: '420.00',
+          roles: createDefaultRoles()
+        },
+        pool: {
+          mode: 'hours',
+          ccTips: '690.00',
+          cashTips: '210.00',
+          staff: createDefaultStaff()
+        }
+      };
+
+      // Cache DOM elements
+      var el = {
+        tabServer: document.getElementById('tab-server'),
+        tabPool: document.getElementById('tab-pool'),
+        panelServer: document.getElementById('panel-server'),
+        panelPool: document.getElementById('panel-pool'),
+        headerCopyBtn: document.getElementById('header-copy-btn'),
+
+        methodSales: document.getElementById('method-sales'),
+        methodTips: document.getElementById('method-tips'),
+        serverMethodNote: document.getElementById('server-method-note'),
+        serverCcTips: document.getElementById('server-cc-tips'),
+        serverCashTips: document.getElementById('server-cash-tips'),
+        serverTotalSales: document.getElementById('server-total-sales'),
+        serverLiquorSales: document.getElementById('server-liquor-sales'),
+        fieldTotalSales: document.getElementById('field-total-sales'),
+        fieldLiquorSales: document.getElementById('field-liquor-sales'),
+        serverTipsInline: document.getElementById('server-tips-inline'),
+        serverRolesCount: document.getElementById('server-roles-count'),
+        serverRolesList: document.getElementById('server-roles-list'),
+        addRoleBtn: document.getElementById('add-role-btn'),
+        restoreRolesBtn: document.getElementById('restore-roles-btn'),
+
+        serverAlert: document.getElementById('server-alert'),
+        serverAlertText: document.getElementById('server-alert-text'),
+        serverNetPay: document.getElementById('server-net-pay'),
+        serverTipoutPctLabel: document.getElementById('server-tipout-pct-label'),
+        serverAvgTipLabel: document.getElementById('server-avg-tip-label'),
+        serverTipsBreakdown: document.getElementById('server-tips-breakdown'),
+        summaryTotalTips: document.getElementById('summary-total-tips'),
+        summaryTotalTipout: document.getElementById('summary-total-tipout'),
+        summaryRolesLedger: document.getElementById('summary-roles-ledger'),
+        serverCopyBtn: document.getElementById('server-copy-btn'),
+        serverResetBtn: document.getElementById('server-reset-btn'),
+        serverCopyStatus: document.getElementById('server-copy-status'),
+
+        poolModeHours: document.getElementById('pool-mode-hours'),
+        poolModePoints: document.getElementById('pool-mode-points'),
+        poolMethodNote: document.getElementById('pool-method-note'),
+        poolModeHint: document.getElementById('pool-mode-hint'),
+        poolCcTips: document.getElementById('pool-cc-tips'),
+        poolCashTips: document.getElementById('pool-cash-tips'),
+        poolTotalInline: document.getElementById('pool-total-inline'),
+        poolStaffCount: document.getElementById('pool-staff-count'),
+        poolStaffList: document.getElementById('pool-staff-list'),
+        addStaffBtn: document.getElementById('add-staff-btn'),
+        restoreStaffBtn: document.getElementById('restore-staff-btn'),
+
+        poolAlert: document.getElementById('pool-alert'),
+        poolAlertText: document.getElementById('pool-alert-text'),
+        poolRateLabel: document.getElementById('pool-rate-label'),
+        poolRateValue: document.getElementById('pool-rate-value'),
+        poolWeightTotalLabel: document.getElementById('pool-weight-total-label'),
+        poolMemberCountLabel: document.getElementById('pool-member-count-label'),
+        poolTipsBreakdown: document.getElementById('pool-tips-breakdown'),
+        summaryPoolTotal: document.getElementById('summary-pool-total'),
+        summaryPoolDistributed: document.getElementById('summary-pool-distributed'),
+        summaryPoolLedger: document.getElementById('summary-pool-ledger'),
+        poolCopyBtn: document.getElementById('pool-copy-btn'),
+        poolResetBtn: document.getElementById('pool-reset-btn'),
+        poolCopyStatus: document.getElementById('pool-copy-status')
+      };
+
+      function createTrashIconSvg() {
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '18');
+        svg.setAttribute('height', '18');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '2');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+        svg.setAttribute('aria-hidden', 'true');
+        var p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p1.setAttribute('d', 'M3 6h18');
+        var p2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p2.setAttribute('d', 'M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2');
+        var p3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p3.setAttribute('d', 'M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6');
+        svg.appendChild(p1);
+        svg.appendChild(p2);
+        svg.appendChild(p3);
+        return svg;
+      }
+
+      /* ---------------------------------------------------------------------
+         Render Dynamic Role Rows (preserves focus by only rebuilding on structural changes)
+         --------------------------------------------------------------------- */
+      function renderRoleRows() {
+        var isSales = state.server.method === 'sales';
+        el.serverRolesList.innerHTML = '';
+
+        if (state.server.roles.length === 0) {
+          var empty = document.createElement('div');
+          empty.className = 'empty-note';
+          empty.textContent = 'No tip-out roles configured. Click "Add Custom Role" or "Restore default roles".';
+          el.serverRolesList.appendChild(empty);
+          return;
+        }
+
+        state.server.roles.forEach(function (role) {
+          var row = document.createElement('div');
+          row.className = 'role-row';
+          row.dataset.roleId = role.id;
+
+          var main = document.createElement('div');
+          main.className = 'row-main';
+
+          var nameInput = document.createElement('input');
+          nameInput.type = 'text';
+          nameInput.className = 'input';
+          nameInput.value = role.name;
+          nameInput.placeholder = 'Role name';
+          nameInput.setAttribute('aria-label', 'Role name for ' + (role.name || 'custom role'));
+          nameInput.addEventListener('input', function (e) {
+            role.name = e.target.value;
+            removeBtn.setAttribute('aria-label', 'Remove ' + (role.name.trim() || 'custom role'));
+            updateServerOutputs();
+          });
+
+          var controls = document.createElement('div');
+          controls.className = isSales ? 'row-controls' : 'row-controls no-base';
+
+          var pctWrap = document.createElement('div');
+          pctWrap.className = 'input-wrap';
+
+          var pctInput = document.createElement('input');
+          pctInput.type = 'text';
+          pctInput.inputMode = 'decimal';
+          pctInput.autocomplete = 'off';
+          pctInput.className = 'input num has-suffix';
+          pctInput.placeholder = '0';
+          pctInput.value = isSales ? role.salesPercent : role.tipsPercent;
+          pctInput.setAttribute('aria-label', (role.name || 'Role') + ' tip-out percentage');
+          pctInput.addEventListener('input', function (e) {
+            if (state.server.method === 'sales') {
+              role.salesPercent = e.target.value;
+            } else {
+              role.tipsPercent = e.target.value;
+            }
+            updateServerOutputs();
+          });
+
+          var pctSuffix = document.createElement('span');
+          pctSuffix.className = 'input-suffix';
+          pctSuffix.setAttribute('aria-hidden', 'true');
+          pctSuffix.textContent = '%';
+
+          pctWrap.appendChild(pctInput);
+          pctWrap.appendChild(pctSuffix);
+          controls.appendChild(pctWrap);
+
+          if (isSales) {
+            var baseSelect = document.createElement('select');
+            baseSelect.className = 'select';
+            baseSelect.setAttribute('aria-label', 'Sales base for ' + (role.name || 'role'));
+            var optTotal = document.createElement('option');
+            optTotal.value = 'total';
+            optTotal.textContent = 'Net sales';
+            var optLiquor = document.createElement('option');
+            optLiquor.value = 'liquor';
+            optLiquor.textContent = 'Liquor sales';
+            baseSelect.appendChild(optTotal);
+            baseSelect.appendChild(optLiquor);
+            baseSelect.value = role.salesBase;
+            baseSelect.addEventListener('change', function (e) {
+              role.salesBase = e.target.value === 'liquor' ? 'liquor' : 'total';
+              updateServerOutputs();
+            });
+            controls.appendChild(baseSelect);
+          }
+
+          var payoutBox = document.createElement('div');
+          payoutBox.className = 'row-payout-box';
+
+          var payoutVal = document.createElement('span');
+          payoutVal.className = 'row-payout-amount';
+          payoutVal.dataset.rolePayout = role.id;
+          payoutVal.textContent = '$0.00';
+
+          var payoutSub = document.createElement('span');
+          payoutSub.className = 'row-payout-sub';
+          payoutSub.dataset.roleSub = role.id;
+          payoutSub.textContent = isSales ? (role.salesBase === 'liquor' ? 'liquor' : 'net sales') : 'of tips';
+
+          payoutBox.appendChild(payoutVal);
+          payoutBox.appendChild(payoutSub);
+          controls.appendChild(payoutBox);
+
+          main.appendChild(nameInput);
+          main.appendChild(controls);
+
+          var removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'btn-icon';
+          removeBtn.setAttribute('aria-label', 'Remove ' + (role.name.trim() || 'custom role'));
+          removeBtn.appendChild(createTrashIconSvg());
+          removeBtn.addEventListener('click', function () {
+            state.server.roles = state.server.roles.filter(function (r) { return r.id !== role.id; });
+            renderRoleRows();
+            updateServerOutputs();
+          });
+
+          row.appendChild(main);
+          row.appendChild(removeBtn);
+          el.serverRolesList.appendChild(row);
+        });
+      }
+
+      function updateServerOutputs() {
+        var result = calculateServerTipOut(state.server);
+        var isSales = result.method === 'sales';
+
+        el.methodSales.setAttribute('aria-pressed', String(isSales));
+        el.methodTips.setAttribute('aria-pressed', String(!isSales));
+        el.serverMethodNote.textContent = isSales
+          ? 'Tip-outs based on net & liquor sales'
+          : 'Tip-outs based on total tips earned';
+
+        el.fieldTotalSales.classList.toggle('input-sales-muted', !isSales);
+        el.fieldLiquorSales.classList.toggle('input-sales-muted', !isSales);
+
+        el.serverTipsInline.textContent = formatCurrencyFromCents(result.totalTipsCents);
+        var roleCount = state.server.roles.length;
+        el.serverRolesCount.textContent = roleCount + (roleCount === 1 ? ' role' : ' roles');
+
+        // Update inline row payout amounts
+        result.breakdown.forEach(function (item) {
+          var amtEl = el.serverRolesList.querySelector('[data-role-payout="' + item.id + '"]');
+          var subEl = el.serverRolesList.querySelector('[data-role-sub="' + item.id + '"]');
+          if (amtEl) amtEl.textContent = formatCurrencyFromCents(item.payoutCents);
+          if (subEl) {
+            if (!isSales) {
+              subEl.textContent = 'of tips';
+            } else if (item.salesBase === 'liquor') {
+              subEl.textContent = result.liquorSalesCents === 0 && item.percent > 0 ? 'enter liquor' : 'liquor';
+            } else {
+              subEl.textContent = 'net sales';
+            }
+          }
+        });
+
+        // Alert if tip-out exceeds total tips
+        if (result.exceedsTips) {
+          var shortfall = result.totalTipOutCents - result.totalTipsCents;
+          el.serverAlert.hidden = false;
+          el.serverAlertText.textContent = 'Tip-out exceeds total tips earned by ' +
+            formatCurrencyFromCents(shortfall) + '. Check your percentages or sales numbers.';
+        } else {
+          el.serverAlert.hidden = true;
+          el.serverAlertText.textContent = '';
+        }
+
+        el.serverNetPay.textContent = formatCurrencyFromCents(result.netTakeHomeCents);
+        el.serverNetPay.classList.toggle('is-negative', result.netTakeHomeCents < 0);
+
+        el.serverTipoutPctLabel.textContent = formatPercent(result.tipOutPercentOfTips) + ' of tips tipped out';
+        el.serverAvgTipLabel.textContent = result.totalSalesCents > 0
+          ? formatPercent(result.avgTipPercentOfSales) + ' avg tip on sales'
+          : 'Enter sales for tip %';
+
+        el.serverTipsBreakdown.textContent = 'CC ' + formatCurrencyFromCents(result.ccTipsCents) +
+          ' + Cash ' + formatCurrencyFromCents(result.cashTipsCents);
+        el.summaryTotalTips.textContent = formatCurrencyFromCents(result.totalTipsCents);
+        el.summaryTotalTipout.textContent = result.totalTipOutCents > 0
+          ? '-' + formatCurrencyFromCents(result.totalTipOutCents)
+          : '$0.00';
+
+        // Render ledger items
+        el.summaryRolesLedger.innerHTML = '';
+        if (result.breakdown.length === 0) {
+          var emptyLi = document.createElement('li');
+          emptyLi.className = 'ledger-row';
+          emptyLi.innerHTML = '<span class="ledger-key">No tip-out roles</span><span class="ledger-val">$0.00</span>';
+          el.summaryRolesLedger.appendChild(emptyLi);
+        } else {
+          result.breakdown.forEach(function (item) {
+            var li = document.createElement('li');
+            li.className = 'ledger-row';
+
+            var keySpan = document.createElement('span');
+            keySpan.className = 'ledger-key';
+            keySpan.textContent = item.name;
+
+            var detailSmall = document.createElement('small');
+            var baseText = isSales
+              ? (item.salesBase === 'liquor' ? 'of liquor sales' : 'of net sales')
+              : 'of total tips';
+            detailSmall.textContent = item.percent + '% ' + baseText;
+            keySpan.appendChild(detailSmall);
+
+            var valSpan = document.createElement('span');
+            valSpan.className = 'ledger-val';
+            valSpan.textContent = formatCurrencyFromCents(item.payoutCents);
+
+            li.appendChild(keySpan);
+            li.appendChild(valSpan);
+            el.summaryRolesLedger.appendChild(li);
+          });
+        }
+      }
+
+      /* ---------------------------------------------------------------------
+         Render Dynamic Bartender Pool Staff Rows
+         --------------------------------------------------------------------- */
+      function renderStaffRows() {
+        var isHours = state.pool.mode === 'hours';
+        el.poolStaffList.innerHTML = '';
+
+        if (state.pool.staff.length === 0) {
+          var empty = document.createElement('div');
+          empty.className = 'empty-note';
+          empty.textContent = 'No staff members in the tip pool. Click "Add Staff Member" to begin.';
+          el.poolStaffList.appendChild(empty);
+          return;
+        }
+
+        state.pool.staff.forEach(function (member) {
+          var row = document.createElement('div');
+          row.className = 'staff-row';
+          row.dataset.staffId = member.id;
+
+          var main = document.createElement('div');
+          main.className = 'row-main';
+
+          var nameInput = document.createElement('input');
+          nameInput.type = 'text';
+          nameInput.className = 'input';
+          nameInput.value = member.name;
+          nameInput.placeholder = 'Staff name';
+          nameInput.setAttribute('aria-label', 'Staff member name for ' + (member.name || 'bar team member'));
+          nameInput.addEventListener('input', function (e) {
+            member.name = e.target.value;
+            removeBtn.setAttribute('aria-label', 'Remove ' + (member.name.trim() || 'staff member'));
+            updatePoolOutputs();
+          });
+
+          var controls = document.createElement('div');
+          controls.className = 'staff-controls row-controls no-base';
+
+          var weightWrap = document.createElement('div');
+          weightWrap.className = 'input-wrap';
+
+          var weightInput = document.createElement('input');
+          weightInput.type = 'text';
+          weightInput.inputMode = 'decimal';
+          weightInput.autocomplete = 'off';
+          weightInput.className = 'input num has-suffix';
+          weightInput.placeholder = isHours ? '0' : '1.0';
+          weightInput.value = isHours ? member.hours : member.points;
+          weightInput.setAttribute(
+            'aria-label',
+            (member.name || 'Staff member') + (isHours ? ' hours worked' : ' point weight')
+          );
+          weightInput.addEventListener('input', function (e) {
+            if (state.pool.mode === 'hours') {
+              member.hours = e.target.value;
+            } else {
+              member.points = e.target.value;
+            }
+            updatePoolOutputs();
+          });
+
+          var unitSuffix = document.createElement('span');
+          unitSuffix.className = 'input-suffix';
+          unitSuffix.setAttribute('aria-hidden', 'true');
+          unitSuffix.textContent = isHours ? 'hr' : 'pt';
+
+          weightWrap.appendChild(weightInput);
+          weightWrap.appendChild(unitSuffix);
+          controls.appendChild(weightWrap);
+
+          var payoutBox = document.createElement('div');
+          payoutBox.className = 'row-payout-box';
+
+          var payoutVal = document.createElement('span');
+          payoutVal.className = 'row-payout-amount';
+          payoutVal.dataset.staffPayout = member.id;
+          payoutVal.textContent = '$0.00';
+
+          var payoutSub = document.createElement('span');
+          payoutSub.className = 'row-payout-sub';
+          payoutSub.dataset.staffShare = member.id;
+          payoutSub.textContent = '0.0%';
+
+          payoutBox.appendChild(payoutVal);
+          payoutBox.appendChild(payoutSub);
+          controls.appendChild(payoutBox);
+
+          main.appendChild(nameInput);
+          main.appendChild(controls);
+
+          var removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'btn-icon';
+          removeBtn.setAttribute('aria-label', 'Remove ' + (member.name.trim() || 'staff member'));
+          removeBtn.appendChild(createTrashIconSvg());
+          removeBtn.addEventListener('click', function () {
+            state.pool.staff = state.pool.staff.filter(function (s) { return s.id !== member.id; });
+            renderStaffRows();
+            updatePoolOutputs();
+          });
+
+          row.appendChild(main);
+          row.appendChild(removeBtn);
+          el.poolStaffList.appendChild(row);
+        });
+      }
+
+      function updatePoolOutputs() {
+        var result = calculateBartenderPool(state.pool);
+        var isHours = result.mode === 'hours';
+
+        el.poolModeHours.setAttribute('aria-pressed', String(isHours));
+        el.poolModePoints.setAttribute('aria-pressed', String(!isHours));
+        el.poolMethodNote.textContent = isHours
+          ? 'Proportional by shift hours'
+          : 'Weighted by role points';
+        el.poolModeHint.textContent = isHours
+          ? 'Enter each bartender\'s clock-in hours. Pennies are balanced so payouts equal the exact pool total.'
+          : 'Assign point weights by role (for example, Lead Bartender = 1.0, Barback = 0.5).';
+
+        el.poolTotalInline.textContent = formatCurrencyFromCents(result.totalPoolCents);
+        var staffCount = state.pool.staff.length;
+        el.poolStaffCount.textContent = staffCount + (staffCount === 1 ? ' staff member' : ' staff');
+
+        result.entries.forEach(function (item) {
+          var amtEl = el.poolStaffList.querySelector('[data-staff-payout="' + item.id + '"]');
+          var shareEl = el.poolStaffList.querySelector('[data-staff-share="' + item.id + '"]');
+          if (amtEl) amtEl.textContent = formatCurrencyFromCents(item.payoutCents);
+          if (shareEl) shareEl.textContent = formatPercent(item.sharePercent);
+        });
+
+        if (result.totalPoolCents > 0 && result.totalWeight === 0) {
+          el.poolAlert.hidden = false;
+          el.poolAlertText.textContent = isHours
+            ? 'Enter hours worked for at least one staff member to split the pool.'
+            : 'Enter point weights above 0 for at least one staff member to split the pool.';
+        } else {
+          el.poolAlert.hidden = true;
+          el.poolAlertText.textContent = '';
+        }
+
+        el.poolRateLabel.textContent = isHours ? 'Hourly Tip Rate' : 'Value per 1.0 Point';
+        el.poolRateValue.textContent = formatCurrencyFromCents(result.rateCents) + (isHours ? '/hr' : '/pt');
+        el.poolWeightTotalLabel.textContent = Number(result.totalWeight.toFixed(2)) +
+          (isHours ? ' total hours' : ' total points');
+        el.poolMemberCountLabel.textContent = result.activeStaffCount +
+          (result.activeStaffCount === 1 ? ' person paid' : ' people paid');
+
+        el.poolTipsBreakdown.textContent = 'CC ' + formatCurrencyFromCents(result.ccTipsCents) +
+          ' + Cash ' + formatCurrencyFromCents(result.cashTipsCents);
+        el.summaryPoolTotal.textContent = formatCurrencyFromCents(result.totalPoolCents);
+        el.summaryPoolDistributed.textContent = formatCurrencyFromCents(result.distributedCents);
+
+        el.summaryPoolLedger.innerHTML = '';
+        if (result.entries.length === 0) {
+          var emptyLi = document.createElement('li');
+          emptyLi.className = 'ledger-row';
+          emptyLi.innerHTML = '<span class="ledger-key">No staff members</span><span class="ledger-val">$0.00</span>';
+          el.summaryPoolLedger.appendChild(emptyLi);
+        } else {
+          result.entries.forEach(function (item) {
+            var li = document.createElement('li');
+            li.className = 'ledger-row';
+
+            var keySpan = document.createElement('span');
+            keySpan.className = 'ledger-key';
+            keySpan.textContent = item.name;
+
+            var detailSmall = document.createElement('small');
+            detailSmall.textContent = Number(item.weight.toFixed(2)) +
+              (isHours ? ' hrs' : ' pts') + ' · ' + formatPercent(item.sharePercent);
+            keySpan.appendChild(detailSmall);
+
+            var valSpan = document.createElement('span');
+            valSpan.className = 'ledger-val';
+            valSpan.textContent = formatCurrencyFromCents(item.payoutCents);
+
+            li.appendChild(keySpan);
+            li.appendChild(valSpan);
+            el.summaryPoolLedger.appendChild(li);
+          });
+        }
+      }
+
+      /* ---------------------------------------------------------------------
+         Tab Switching & Utility Actions
+         --------------------------------------------------------------------- */
+      function setActiveTab(tab) {
+        state.activeTab = tab === 'pool' ? 'pool' : 'server';
+        var isServer = state.activeTab === 'server';
+        el.tabServer.setAttribute('aria-selected', String(isServer));
+        el.tabPool.setAttribute('aria-selected', String(!isServer));
+        el.panelServer.hidden = !isServer;
+        el.panelPool.hidden = isServer;
+      }
+
+      var copyTimer = null;
+      function copyTextToClipboard(text, statusEl, buttonEl) {
+        function showCopied() {
+          if (copyTimer) clearTimeout(copyTimer);
+          var originalText = buttonEl ? buttonEl.dataset.originalLabel : '';
+          if (statusEl) {
+            statusEl.textContent = 'Shift summary copied to clipboard.';
+          }
+          if (buttonEl && originalText) {
+            buttonEl.textContent = 'Copied!';
+          }
+          copyTimer = setTimeout(function () {
+            if (statusEl) statusEl.textContent = '';
+            if (buttonEl && originalText) {
+              buttonEl.textContent = originalText;
+            }
+          }, 2400);
+        }
+
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          navigator.clipboard.writeText(text).then(showCopied).catch(function () {
+            fallbackCopy(text, showCopied, statusEl);
+          });
+        } else {
+          fallbackCopy(text, showCopied, statusEl);
+        }
+      }
+
+      function fallbackCopy(text, onSuccess, statusEl) {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          if (ok) {
+            onSuccess();
+          } else if (statusEl) {
+            statusEl.textContent = 'Unable to access clipboard in this browser.';
+          }
+        } catch (err) {
+          if (statusEl) {
+            statusEl.textContent = 'Unable to access clipboard in this browser.';
+          }
+        }
+      }
+
+      function handleCopyActiveSummary(triggerBtn) {
+        if (state.activeTab === 'server') {
+          var serverResult = calculateServerTipOut(state.server);
+          var text = buildServerSummaryText(serverResult);
+          copyTextToClipboard(text, el.serverCopyStatus, triggerBtn);
+        } else {
+          var poolResult = calculateBartenderPool(state.pool);
+          var poolText = buildPoolSummaryText(poolResult);
+          copyTextToClipboard(poolText, el.poolCopyStatus, triggerBtn);
+        }
+      }
+
+      // Store original label for header button
+      el.headerCopyBtn.dataset.originalLabel = 'Copy Summary';
+
+      /* ---------------------------------------------------------------------
+         Event Listeners
+         --------------------------------------------------------------------- */
+      el.tabServer.addEventListener('click', function () { setActiveTab('server'); });
+      el.tabPool.addEventListener('click', function () { setActiveTab('pool'); });
+
+      // Header quick links that also switch tab
+      document.querySelectorAll('[data-nav-tab]').forEach(function (link) {
+        link.addEventListener('click', function () {
+          setActiveTab(link.getAttribute('data-nav-tab'));
+        });
+      });
+
+      el.headerCopyBtn.addEventListener('click', function () {
+        handleCopyActiveSummary(el.headerCopyBtn);
+      });
+
+      // Server tab listeners
+      el.methodSales.addEventListener('click', function () {
+        if (state.server.method === 'sales') return;
+        state.server.method = 'sales';
+        renderRoleRows();
+        updateServerOutputs();
+      });
+
+      el.methodTips.addEventListener('click', function () {
+        if (state.server.method === 'tips') return;
+        state.server.method = 'tips';
+        renderRoleRows();
+        updateServerOutputs();
+      });
+
+      el.serverCcTips.addEventListener('input', function (e) {
+        state.server.ccTips = e.target.value;
+        updateServerOutputs();
+      });
+
+      el.serverCashTips.addEventListener('input', function (e) {
+        state.server.cashTips = e.target.value;
+        updateServerOutputs();
+      });
+
+      el.serverTotalSales.addEventListener('input', function (e) {
+        state.server.totalSales = e.target.value;
+        updateServerOutputs();
+      });
+
+      el.serverLiquorSales.addEventListener('input', function (e) {
+        state.server.liquorSales = e.target.value;
+        updateServerOutputs();
+      });
+
+      el.addRoleBtn.addEventListener('click', function () {
+        var id = makeId('role');
+        state.server.roles.push({
+          id: id,
+          name: '',
+          salesPercent: '1',
+          tipsPercent: '5',
+          salesBase: 'total'
+        });
+        renderRoleRows();
+        updateServerOutputs();
+        var newRow = el.serverRolesList.querySelector('[data-role-id="' + id + '"] input');
+        if (newRow) newRow.focus();
+      });
+
+      el.restoreRolesBtn.addEventListener('click', function () {
+        state.server.roles = createDefaultRoles();
+        renderRoleRows();
+        updateServerOutputs();
+      });
+
+      el.serverCopyBtn.addEventListener('click', function () {
+        handleCopyActiveSummary(null);
+      });
+
+      el.serverResetBtn.addEventListener('click', function () {
+        state.server.ccTips = '';
+        state.server.cashTips = '';
+        state.server.totalSales = '';
+        state.server.liquorSales = '';
+        el.serverCcTips.value = '';
+        el.serverCashTips.value = '';
+        el.serverTotalSales.value = '';
+        el.serverLiquorSales.value = '';
+        el.serverCopyStatus.textContent = '';
+        updateServerOutputs();
+        el.serverCcTips.focus();
+      });
+
+      // Bartender tip pool listeners
+      el.poolModeHours.addEventListener('click', function () {
+        if (state.pool.mode === 'hours') return;
+        state.pool.mode = 'hours';
+        renderStaffRows();
+        updatePoolOutputs();
+      });
+
+      el.poolModePoints.addEventListener('click', function () {
+        if (state.pool.mode === 'points') return;
+        state.pool.mode = 'points';
+        renderStaffRows();
+        updatePoolOutputs();
+      });
+
+      el.poolCcTips.addEventListener('input', function (e) {
+        state.pool.ccTips = e.target.value;
+        updatePoolOutputs();
+      });
+
+      el.poolCashTips.addEventListener('input', function (e) {
+        state.pool.cashTips = e.target.value;
+        updatePoolOutputs();
+      });
+
+      el.addStaffBtn.addEventListener('click', function () {
+        var id = makeId('staff');
+        state.pool.staff.push({
+          id: id,
+          name: '',
+          hours: '',
+          points: '1.0'
+        });
+        renderStaffRows();
+        updatePoolOutputs();
+        var newInput = el.poolStaffList.querySelector('[data-staff-id="' + id + '"] input');
+        if (newInput) newInput.focus();
+      });
+
+      el.restoreStaffBtn.addEventListener('click', function () {
+        state.pool.staff = createDefaultStaff();
+        renderStaffRows();
+        updatePoolOutputs();
+      });
+
+      el.poolCopyBtn.addEventListener('click', function () {
+        handleCopyActiveSummary(null);
+      });
+
+      el.poolResetBtn.addEventListener('click', function () {
+        state.pool.ccTips = '';
+        state.pool.cashTips = '';
+        el.poolCcTips.value = '';
+        el.poolCashTips.value = '';
+        state.pool.staff.forEach(function (member) {
+          member.hours = '';
+        });
+        el.poolCopyStatus.textContent = '';
+        renderStaffRows();
+        updatePoolOutputs();
+        el.poolCcTips.focus();
+      });
+
+      // Initial render
+      renderRoleRows();
+      updateServerOutputs();
+      renderStaffRows();
+      updatePoolOutputs();
+    })();
+  </script>
+</body>
+</html>
